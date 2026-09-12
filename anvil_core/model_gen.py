@@ -226,18 +226,34 @@ class Hunyuan3DGenerator(Generator):
 
         if image.mode == "RGBA" and np.asarray(image)[..., 3].min() < 255:
             return image
-        from hy3dshape.rembg import BackgroundRemover  # noqa: PLC0415
-        return BackgroundRemover()(image.convert("RGB"))
+        try:
+            from . import view_preprocess
+            return view_preprocess._remove_background(image)
+        except Exception as exc:
+            events.log("", f"Background removal fallback ({exc})", "warn")
+            return image.convert("RGBA")
 
     def generate(self, *, prompt: str, image_path: str | None, out_path: Path, style, flags: dict,
                  request=None) -> Path:
         if self._pipeline is None:
             raise ModelGenError("Hunyuan3D generate() called before load()")
-        if not image_path:
-            raise ModelGenError("Hunyuan3D is image-conditioned — step 6 should have supplied an image.")
         from PIL import Image
-        image = Image.open(image_path)
-        image = self._isolate_subject(image)
+        image = None
+        if request is not None and hasattr(request, "views") and request.views:
+            for slot, view in request.views.items():
+                slot_val = slot.value if hasattr(slot, "value") else str(slot)
+                if slot_val == "front":
+                    if view.image is not None:
+                        image = view.image
+                        break
+                    elif view.source_path and Path(view.source_path).exists():
+                        image = self._isolate_subject(Image.open(view.source_path))
+                        break
+        if image is None:
+            if not image_path:
+                raise ModelGenError("Hunyuan3D is image-conditioned — step 6 should have supplied an image.")
+            image = Image.open(image_path)
+            image = self._isolate_subject(image)
         # mc_algo='mc' picks skimage's marching cubes. The alternative, 'dmc', needs the
         # `diso` CUDA extension, which has no prebuilt Windows wheel.
         # generate() has no session_id in its signature; the dispatcher already logged
@@ -327,10 +343,9 @@ class Hunyuan3DMvGenerator(Generator):
         if image.mode == "RGBA" and np.asarray(image)[..., 3].min() < 255:
             return image
         try:
-            from hy3dshape.rembg import BackgroundRemover  # noqa: PLC0415
-            return BackgroundRemover()(image.convert("RGB"))
-        except ImportError:
-            # If rembg isn't available, return as RGBA with full alpha
+            from . import view_preprocess
+            return view_preprocess._remove_background(image)
+        except Exception:
             return image.convert("RGBA")
 
     def _build_view_dict(self, image_path: str | None, request) -> dict:
