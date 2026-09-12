@@ -1,0 +1,49 @@
+# ANVIL — Python dependencies
+# Installed into ./essential_tools/venv by the setup script. Nothing global.
+
+# --- HTTP layer ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+pydantic==2.10.4
+
+# --- reasoning / transport ---
+httpx==0.28.1
+
+# --- mesh handling (postprocess, mock backend, stats, format conversion) ---
+trimesh==4.5.3
+# Lower bounds rather than exact pins: the optional real backends (rembg for
+# Hunyuan3D's background removal, diffusers for image generation) require newer
+# releases, and an exact pin here makes re-running setup silently downgrade them.
+numpy>=2.2.1
+pillow>=11.1.0
+
+# Backs trimesh's decimation. Without it trimesh raises on
+# simplify_quadric_decimation and every style's target triangle count is
+# silently ignored — which makes the presets look identical. Not optional.
+# 0.1.13 is the first release with a prebuilt abi3 wheel for Python 3.13;
+# earlier pins compile from source and need MSVC on Windows.
+fast-simplification==0.1.13
+
+# Voxelisation and mesh boolean support used by the blocky presets
+manifold3d==3.0.1
+
+# trimesh treats scipy as optional, but the postprocess chain hits code paths
+# that import it — without it the pipeline fails at the smoothing step.
+scipy
+
+# --- optional but small: speeds up trimesh's GLB/GLTF path ---
+pycollada==0.8
+
+# ---------------------------------------------------------------------------
+# NOT installed by default — these are large, GPU-specific, and only needed once
+# you move off the mock backends. See SETUP_GUIDE.md § "API & Model Integration".
+#
+#   torch          -> install the build matching your CUDA version from pytorch.org
+#   diffusers      -> only for IMAGE_BACKEND=diffusers
+#   transformers   -> pulled in by diffusers
+#   accelerate     -> pulled in by diffusers
+#
+# Install them into the same venv:
+#   ./essential_tools/venv/bin/pip install torch --index-url https://download.pytorch.org/whl/cu124
+# ---------------------------------------------------------------------------

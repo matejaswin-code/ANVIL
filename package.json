@@ -1,0 +1,14 @@
+{
+  "name": "anvil",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local-first AI 3D asset pipeline — frontend vendor dependencies only",
+  "scripts": {
+    "vendor": "node essential_tools/vendor.js",
+    "postinstall": "node essential_tools/vendor.js"
+  },
+  "dependencies": {
+    "three": "0.160.1"
+  },
+  "comment": "three.js powers the in-browser GLB preview only. Everything installs into ./node_modules and is then copied into frontend/vendor/ by vendor.js — no global installs, no CDN at runtime."
+}

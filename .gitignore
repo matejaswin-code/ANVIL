@@ -1,0 +1,34 @@
+# local environment — never committed
+essential_tools/venv/
+node_modules/
+frontend/vendor/
+models/
+backends/
+.env
+
+# IDE / Agent configurations
+.claude/
+.gemini/
+.vscode/
+.idea/
+
+# runtime output (keep directory structure via .gitkeep)
+sessions/*
+!sessions/.gitkeep
+assets/*
+!assets/.gitkeep
+logs/*
+!logs/.gitkeep
+
+# blender backups
+*.blend1
+*.blend@
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
