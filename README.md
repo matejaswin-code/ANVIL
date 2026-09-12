@@ -43,7 +43,10 @@ Out of the box, ANVIL runs on **mock backends** — the entire 10-step pipeline 
   Every generation step checkpoints `session.json` to disk. If interrupted, simply resume from the UI or browse past sessions without lost work.
 
 - **On-Demand Texturing & Auto-Rigging**  
-  Decoupled post-processing: only spend GPU time texturing or generating humanoid skeletons (via UniRig) on models you approve.
+  Decoupled post-processing: only spend GPU time texturing or generating humanoid skeletons on models you approve.  
+  > ⚠️ **Important Resource & Status Notes**:  
+  > - **Skeleton Rigging**: The skeleton auto-rigging feature (UniRig integration) is **still untested**.  
+  > - **RAM Requirements**: For **model generation only, 16GB RAM should be fine**. However, for **texture generation, 32GB RAM is the minimum** due to texture projection, baking, and rasterization overhead.
 
 ---
 
@@ -104,10 +107,13 @@ A responsive, industrial three-zone workbench:
 ---
 
 ## System Requirements
-
+ 
 - **OS**: Windows 10/11 or Linux (Ubuntu 22.04+ recommended).
 - **GPU**: NVIDIA GPU with 8GB+ VRAM (12GB+ recommended for full local Hunyuan3D + SDXL pipelines).
-- **RAM**: 16GB RAM minimum (32GB recommended).
+- **RAM**:
+  - **Model Generation only**: **16GB RAM** should be fine.
+  - **Texture Generation**: **32GB RAM minimum** is required for texture projection and map generation.
+- **Skeleton Rigging Status**: The skeleton rigging feature is currently experimental and **still not tested**.
 - **Python**: Python 3.10 – 3.13.
 - **Blender**: Blender 4.x or 5.x (optional, for direct scene bridge and live editing).
 - **Node.js**: Node.js 18+ (optional, for in-browser 3D preview bundling).
