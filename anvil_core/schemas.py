@@ -162,7 +162,8 @@ class Session:
     def mark_step(self, step_name: str) -> None:
         if step_name not in self.completed_steps:
             self.completed_steps.append(step_name)
-        self.current_step = max(self.current_step, STEP_INDEX[step_name])
+        if step_name in STEP_INDEX:
+            self.current_step = max(self.current_step, STEP_INDEX[step_name])
         self.updated_at = time.time()
 
     def has_completed(self, step_name: str) -> bool:
